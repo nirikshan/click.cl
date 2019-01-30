@@ -1,0 +1,44 @@
+{
+  "_from": "click-cli@^1.0.0",
+  "_id": "click-cli@1.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-FiJgtwKRIEQzGfN3oal18S1WGfqpgqNzO6KAbzCLO3wgYB1wwBGsrleoPTBAbgxzIvniBwfF4NXsMAH0Q2h2fQ==",
+  "_location": "/click-cli",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "click-cli@^1.0.0",
+    "name": "click-cli",
+    "escapedName": "click-cli",
+    "rawSpec": "^1.0.0",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/click-cli/-/click-cli-1.0.0.tgz",
+  "_shasum": "8229ef56eab00dbd3fcead393ebc440f8c0ac795",
+  "_spec": "click-cli@^1.0.0",
+  "_where": "/home/nirikshan/Desktop/CodeBase/clickjs",
+  "author": {
+    "name": "Nirikshan Bhusal"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "indo-compiler": "0.0.1"
+  },
+  "deprecated": false,
+  "description": "",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "license": "ISC",
+  "main": "click.js",
+  "name": "click-cli",
+  "scripts": {
+    "test": ""
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "click-cli": "^1.0.0"
+  },
+  "deprecated": false,
+  "description": "click.js application with webpack and babel Configuration.",
+  "devDependencies": {
+    "@babel/cli": "^7.2.0",
+    "@babel/core": "^7.2.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/preset-env": "^7.2.0",
+    "@babel/preset-es2015": "^7.0.0-beta.53",
+    "babel-loader": "^8.0.4",
+    "babel-minify-webpack-plugin": "^0.3.1",
+    "babel-preset-es2015": "^6.24.1",
+    "clean-webpack-plugin": "^1.0.0",
+    "click-loader": "^2.0.0",
+    "css-loader": "^2.0.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^2.0.0",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "multi-loader": "^0.1.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "terser-webpack-plugin": "^1.2.1",
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "license": "ISC",
+  "main": "webpack.config.js",
+  "name": "create-click-app",
+  "scripts": {
+    "build:prod": "webpack -p",
+    "click": "webpack-dev-server"
+  },
+  "version": "1.0.0"
+}
