@@ -8,6 +8,7 @@ global.$ = {
     Components: {},
     global: {},
     S: {},
+    O:{},
     Clst: {
         c: 0,
         bl: [],
@@ -31,7 +32,7 @@ class $_Click {
                 var component = $.Components[name];
                 if (component !== undefined) {
                     console.time('clickjs')
-                    Manage(ground, name, 'Click_Root', {}, {
+                    Manage(ground, name, 'Click_Root', fiber, {
                         st: true
                     });
                     console.timeEnd('clickjs')
@@ -47,6 +48,7 @@ class app {
         if (typeof x === 'string' && typeof y === 'object') {
             y.view = (y.view);
             $.Components[x] = y;
+            return y;
         }
     }
 
