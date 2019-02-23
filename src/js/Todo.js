@@ -2,43 +2,45 @@ import {app} from 'click-cli';
 import '../css/main.css'
 new app('todo',{
     view:(`<div class="container">
-       <b style="margin-left:40%;">{total}  item on list</b>
+       <b style="margin-left:40%;">{total}  item on list {ItemName}</b>
         <div class="toplayer">
-            <input type="text" class="ItemName" cl-run="ItemName">
-            <button cl-click="add" class="addBtn">Add</button>
+            <input type="text" class="ItemName" c-run="ItemName">
+            <button c-click="add" class="addBtn">Add</button>
         </div>
         <div class="todoStore">
-            <ul cl-loop="TodoStore>>a">
-                <li class="todoItem" cl-click="isdone">
-                    <div class="todoName">{a.id} ) {a.name}</div>
-                    <span class="todoRemove" cl-click="remove" id="{a.id}">X</span>
+            <ul c-loop="TodoStore>>a,index">
+                <li class="todoItem" c-click="isdone">
+                    <div class="todoName"> {index} ) {a}</div>
+                    <span class="todoRemove" c-click="remove" id="{index}">X</span>
                 </li>
             </ul>
         </div>
     </div>`),
 
     state:{
-        ItemName  : null,
+        ItemName  :'',
         TodoStore : [
-            {id:1,name:'nirikshan'},
-            {id:2,name:'xprin'}
+            'nirikshan',
+            'xprin',
+            "san frinciso",
+            "Click.js",
+            "indo-compiler",
+            "webpack",
+            'NCS',
+            "jackey"
         ],
         total : 0
     },
 
     events:{
         add:function() {
-            if(this.ItemName !== null){
-                const a = '-';
-                this.TodoStore.push({
-                    id:this.TodoStore.length + 1,
-                    name: a+this.ItemName
-                });
-                this.ItemName = null;
+            if(this.ItemName.length > 0){
+                this.TodoStore.push(this.ItemName);
+                this.ItemName = '';
             }
         },
         remove:function(a) {
-             this.TodoStore.del(a.target.id);
+            this.TodoStore.splice(a.target.id,1);
         },
         isdone:function(a) {
             if(a.target.style['text-decoration'] && a.target.style['text-decoration'] !== 'none'){
@@ -51,6 +53,7 @@ new app('todo',{
 
     auto:{
         TodoStore:function (a){
+            // console.log('this is repailing')
             this.total = a.length;
             return(a);
         }
