@@ -13,29 +13,32 @@ export default class Observer {
             return;
         }
         Object.keys(data).forEach(function(key) {
-            self.observeObject(data, key, data[key], auto[key] , ci , cn);
+            self.observeObject(data, key, data[key], auto , ci , cn);
         });
     }
-        
+
     observeObject(data, key, val, compute , ci , cn) {
-        var self = this;
+        var self = this,
+            val  = self.auto(compute[key] , data , val)
         Object.defineProperty(data, key, {
             enumerable: true,
             configurable: false,
             get: function() {
-                return (void 0 !== compute) ? compute.bind(global.$.S[ci])(val) : val
+                  return val;//(void 0 !== auto) ? auto.bind(global.$.S[ci])(val) : val;
             },
             set: function(newVal) {
                 if (val === newVal) {
                     return;
                 }
+                var newVal =  self.auto(compute[key] , data , newVal);
                 if(typeof(newVal) == 'number'){
                     newVal = newVal.toString();
                 }
                 val = newVal;
+                
                  UpdateData(val , ci , cn)
                  if (Array.isArray(newVal)) {
-                     self.observeArray(newVal , ci , cn);
+                     self.observeArray(data , newVal , ci , cn , compute , key);
                  } else {
                      self.observe(newVal, {} , ci , cn);
                  }
@@ -43,7 +46,7 @@ export default class Observer {
         });
 
         if (Array.isArray(val)) {
-            self.observeArray(val , ci , cn);
+            self.observeArray(data , val , ci , cn , compute , key);
         } else {
             if(typeof(val) === 'object'){  
                 self.observe(val , {} , ci , cn);
@@ -51,56 +54,41 @@ export default class Observer {
         }
     }
 
-    observeArray(arr , ci , cn) {
+    observeArray(data , arr , ci , cn , compute , key) {
         var self = this;
-        arr.__proto__ = self.defineReactiveArray(ci , cn , arr);
+        arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key);
 
         arr.forEach(function(item, z) {
             self.observe(item, {} , ci , cn);
         });
     }
 
-    defineReactiveArray(ci , cn , val) {
+    defineReactiveArray(data , ci , cn , val , compute , key) {
         var arrayPrototype = Array.prototype;
         var arrayMethods = Object.create(arrayPrototype);
         var self = this;
-
-        // Rewrite the array manipulating methods.
-        var methods = [
+        [
             'pop', //
             'push', //
             'sort',
             'shift', //
             'splice', //
             'unshift',
-            'reverse', //
-            'clone', //
-            'search',
-            'del'
-        ];
-
-        methods.forEach(function(method) {
+            'reverse'
+        ].forEach(function(method) {
             var original = arrayPrototype[method];
-
+            
             Object.defineProperty(arrayMethods, method, {
                 value: function() {
                     var args = [];
+                    data[key] = self.auto(compute[key] , data , this);
 
                     for (var i = 0, l = arguments.length; i < l; i++) {
                         args.push(arguments[i]);
                     }
 
-                    if (method == 'clone') {
-                       
-                    } else if (method == 'search') {
-                       
-                    } else if (method == 'del') {
-                        self.del(this, args)
-                    } else {
-                        var result = original.apply(this, args);
-                    }
-
-
+                    
+                    var result = original.apply(this, args);
                     var inserted;
                     switch (method) {
                         case 'push':
@@ -111,10 +99,10 @@ export default class Observer {
                             inserted = args.slice(2)
                             break
                     }
-
-                   // console.log(method)
+                   
+                    
                     if (inserted && inserted.length) {
-                        self.observeArray(inserted , ci , cn)
+                        self.observeArray(data , inserted , ci , cn , compute)
                     }
                     UpdateData(val , ci , cn)
                     return result
@@ -126,6 +114,13 @@ export default class Observer {
         });
 
         return arrayMethods;
+    }
+
+    auto(fun , data , value){
+        if(undefined !== fun){
+            return fun.bind(data)(value) || value;
+        }
+        return(value);
     }
 
 }
