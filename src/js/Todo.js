@@ -15,6 +15,7 @@ new app('todo',{
                 </li>
             </ul>
         </div>
+        <button class="addBtn" c-click="cleanall" >Clean All</button>
     </div>`),
 
     state:{
@@ -48,14 +49,18 @@ new app('todo',{
             }else{
                 a.target.style['text-decoration'] = 'line-through';
             }
+        },
+        cleanall:function(a) {
+            this.TodoStore.clean(); 
         }
     },
 
     auto:{
         TodoStore:function (a){
-            // console.log('this is repailing')
-            this.total = a.length;
-            return(a);
+            this.total = a.length;  
+        },
+        ItemName:function(a) {
+            return a.toUpperCase();
         }
     },
 
