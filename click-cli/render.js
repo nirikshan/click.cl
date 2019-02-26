@@ -145,7 +145,6 @@ var     flatten = function(arr) {
             }
             
             if(type == 1){
-              console.log(patches)
                var newEl = createElement(newNode , global.$.S[patches.ci] , patches.cn , patches.ci);
                return parent.appendChild(newEl)
             }
@@ -238,7 +237,7 @@ var     flatten = function(arr) {
             }
             return patches
         },
-        UpdateData = function(val , ci , cn ) {
+        UpdateData = function(val , ci , cn) {
             var view      =   global.$.Components[cn],
                 NewData   =   global.$.S[ci],
                 OldData   =   global.$.O[ci],
@@ -246,11 +245,9 @@ var     flatten = function(arr) {
                 New       =   view.view(NewData ,cX ),
                 Old       =   view.view( OldData , cX), 
                 patches   =   diff(New, Old , ci , cn);
+                patch(el, patches)
+
                 global.$.O[ci] = JSON.parse(JSON.stringify(NewData));
-                
-                Promise.resolve(patch(el, patches)).then(function(a) {
-                  //max vibs
-                });
         }
 
           
