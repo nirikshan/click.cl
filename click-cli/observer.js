@@ -55,12 +55,6 @@ export default class Observer {
     observeArray(data , arr , ci , cn , compute , key) {
         var self = this;
         arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key);
-
-        //arr.forEach(function(item, z) {
-            
-            //self.observe(Object.assign({},arr), {} , ci , cn);
-        //});
-       // self.observeObject(data, key, data[key], auto , ci , cn);
     }
 
     defineReactiveArray(data , ci , cn , val , compute , key) {
@@ -75,7 +69,7 @@ export default class Observer {
             'splice', //
             'unshift',
             'reverse',
-            'length'
+            'clean'
         ].forEach(function(method) {
             var original = arrayPrototype[method];
             
@@ -88,8 +82,13 @@ export default class Observer {
                         args.push(arguments[i]);
                     }
 
-                    
-                    var result = original.apply(this, args);
+                    if(method == 'clean'){
+                        while (this.length > 0) {
+                            this.pop();
+                        }
+                    }else{
+                        var result = original.apply(this, args);
+                    }  
                     var inserted;
                     switch (method) {
                         case 'push':
@@ -100,12 +99,10 @@ export default class Observer {
                             inserted = args.slice(2)
                             break
                     }
-                   
-                    
                     if (inserted && inserted.length) {
                         self.observeArray(data , inserted , ci , cn , compute)
                     }
-                    self.auto(compute[key] , data , this);
+                    self.auto(compute[key] , data , data[key]);
                     UpdateData(val , ci , cn)
                     return result
                 },
