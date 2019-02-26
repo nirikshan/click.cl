@@ -24,15 +24,13 @@ export default class Observer {
             enumerable: true,
             configurable: false,
             get: function() {
-                  return val;//(void 0 !== auto) ? auto.bind(global.$.S[ci])(val) : val;
+                  return val;
             },
             set: function(newVal) {
-                if (val === newVal) {
-                    return;
-                }
+                if (val === newVal) {return;}
                 var newVal =  self.auto(compute[key] , data , newVal);
                 if(typeof(newVal) == 'number'){
-                    newVal = newVal.toString();
+                    var newVal = newVal.toString();
                 }
                 val = newVal;
                 
@@ -58,9 +56,11 @@ export default class Observer {
         var self = this;
         arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key);
 
-        arr.forEach(function(item, z) {
-            self.observe(item, {} , ci , cn);
-        });
+        //arr.forEach(function(item, z) {
+            
+            //self.observe(Object.assign({},arr), {} , ci , cn);
+        //});
+       // self.observeObject(data, key, data[key], auto , ci , cn);
     }
 
     defineReactiveArray(data , ci , cn , val , compute , key) {
@@ -74,14 +74,15 @@ export default class Observer {
             'shift', //
             'splice', //
             'unshift',
-            'reverse'
+            'reverse',
+            'length'
         ].forEach(function(method) {
             var original = arrayPrototype[method];
             
             Object.defineProperty(arrayMethods, method, {
                 value: function() {
                     var args = [];
-                    data[key] = self.auto(compute[key] , data , this);
+                    
 
                     for (var i = 0, l = arguments.length; i < l; i++) {
                         args.push(arguments[i]);
@@ -104,6 +105,7 @@ export default class Observer {
                     if (inserted && inserted.length) {
                         self.observeArray(data , inserted , ci , cn , compute)
                     }
+                    self.auto(compute[key] , data , this);
                     UpdateData(val , ci , cn)
                     return result
                 },
