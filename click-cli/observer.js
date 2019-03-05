@@ -18,8 +18,12 @@ export default class Observer {
     }
 
     observeObject(data, key, val, compute , ci , cn) {
-        var self = this,
-            val  = self.auto(compute[key] , data , val)
+        var self = this;
+            if(typeof(val) == 'function'){
+                var max = val;
+                val = max()
+            }   
+            val  = self.auto(compute[key] , data , val);
         Object.defineProperty(data, key, {
             enumerable: true,
             configurable: false,
@@ -32,7 +36,11 @@ export default class Observer {
                 if(typeof(newVal) == 'number'){
                     var newVal = newVal.toString();
                 }
-                val = newVal;
+                if(typeof max == 'function'){
+                        val = max(newVal);
+                }else{
+                    val = newVal;
+                }
                 
                  UpdateData(val , ci , cn)
                  if (Array.isArray(newVal)) {
@@ -62,11 +70,11 @@ export default class Observer {
         var arrayMethods = Object.create(arrayPrototype);
         var self = this;
         [
-            'pop', //
-            'push', //
+            'pop', 
+            'push', 
             'sort',
-            'shift', //
-            'splice', //
+            'shift', 
+            'splice',
             'unshift',
             'reverse',
             'clean'
