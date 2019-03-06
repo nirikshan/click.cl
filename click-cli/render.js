@@ -35,22 +35,25 @@ var     flatten = function(arr) {
             
             return $el
         },
-        updateObj = function updateObj(a, b) {
-            var c = {};
-            for (var key in a) c[key] = a[key];
-            for (var key in b) c[key] = (Array.isArray(a[key])) ? a[key].concat(b[key]) : b[key];
-            return c;
+        clone = function clone(o) {
+          var out, v, key;
+          out = Array.isArray(o) ? [] : {};
+          for (key in o) {
+              v = o[key];
+              out[key] = (typeof v === "object" && v !== null) ? clone(v) : v;
+          }
+          return out;
         },
         Manage = function Manage(ground, ComponentName, ComponentId, Props) {
                 var component = global.$.Components[ComponentName];
                 if (component !== undefined) {
-                    var data =  updateObj(JSON.parse(JSON.stringify(component.state)) , Props);
-                        global.$.O[ComponentId] = JSON.parse(JSON.stringify(data));
+                    const data =  clone(component.state);
+                        global.$.O[ComponentId] = clone(data);
 
                     var state = new Observer(data , component.auto || {} , ComponentId , ComponentName).data
                         
                     global.$.S[ComponentId] = state;
-                    ground.appendChild(createElement(component.view(global.$.S[ComponentId] , cX) , global.$.S[ComponentId] , ComponentName , ComponentId))       
+                    ground.appendChild(createElement(component.view(state , cX) , state , ComponentName , ComponentId))       
                 }
         },
         setProps = function setProps(node , el , state , ComponentName , ComponentId) {
@@ -94,12 +97,13 @@ var     flatten = function(arr) {
           }
         },
         BindAllLayers = function BindAllLayers(scope, tag, props, name ,value, ComponentId) {
-          var s = (-1 !== ['checkbox', 'radio'].indexOf(tag.attributes.type.value) ? 'change' : 'input'),
+          var attr = tag.nodeName === 'INPUT' ? (tag.attributes.type && tag.attributes.type.value) : tag.nodeName == 'SELECT' ? 'select' : tag.nodeName,
+              s = (-1 !== ['checkbox', 'radio','select'].indexOf(attr) ? 'change' : 'input'),
                val   = value.split('.').reverse()[0];
                scope = parse(value , scope , 1); // pure scope is for loop no need to parse
       
           tag.addEventListener(s, function(e) {
-              var va = ('change' == s ? this.checked : ((tag.attributes.type.value == 'file') ? this.files[0] : this.value));
+              var va = ('change' == s ? this.checked || this.value : ((tag.attributes.type && tag.attributes.type.value == 'file') ? this.files[0] : this.value));
               scope[val] = va;
           });
           tag.value = scope[val];    
@@ -107,10 +111,16 @@ var     flatten = function(arr) {
         EvaluateEvents = function EvaluateEvents(props, name, node , value, state , ComponentName , ComponentId) {
             var kl = global.$.Components[ComponentName];
             if (kl) {
-                var state = global.$.S[ComponentId];
+                var state = global.$.S[ComponentId],
+                caller    = null;
+                if(value.indexOf(')') !== -1){
+                    var splits = value.replace(/\\"/g, '').split(')')[0].split('('),
+                    value  = splits[0],
+                    caller = splits[1];
+                }
                 var lv = kl.events[value].bind(state);
                 node.addEventListener(name, function(a) {
-                    lv(a)
+                    lv(a , (state[caller] || caller))
                 })
             }
         },
@@ -129,9 +139,6 @@ var     flatten = function(arr) {
             if(type === 6){
               parent.value = parse(value ,$.S[propPatch.ci] , 0) || ''
             }
-            // if (type === REMOVE_PROP) {
-            //   removeProp(parent, name, value)
-            // }
           }
         },        
         patch = function(parent, patches, index = 0) { //@
@@ -182,6 +189,9 @@ var     flatten = function(arr) {
         },
         diff = function(newNode, oldNode , ci , cn) {  //@
             
+          if(typeof(newNode) == 'function' && typeof(oldNode) == 'function' ){
+           // console.log(newNode == oldNode)
+          }
           
           if(typeof(newNode) == 'string' || typeof(oldNode) == 'number'){
             if(changed(newNode, oldNode)) {
@@ -247,7 +257,7 @@ var     flatten = function(arr) {
                 patches   =   diff(New, Old , ci , cn);
                 patch(el, patches)
 
-                global.$.O[ci] = JSON.parse(JSON.stringify(NewData));
+                global.$.O[ci] = clone(NewData);
         }
 
           
