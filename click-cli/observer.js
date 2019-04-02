@@ -19,7 +19,7 @@ export default class Observer {
 
     observeObject(data, key, val, compute , ci , cn) {
         var self = this;
-            if(typeof(val) == 'function'){
+            if(typeof(val) == 'function' && key !== '$emit'){
                 var max = val;
                 val = max()
             }   
