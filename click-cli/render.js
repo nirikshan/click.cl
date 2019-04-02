@@ -1,29 +1,27 @@
 import Observer from './observer';
 
 var     flatten = function(arr) {
-            return [].concat.apply([], arr)
+            return [].concat.apply([], arr);
         },
         cX = function(type, props , ...children) {
             return {type:type,props:props,children:flatten(children)}
         },
         clickId =  function( d , n) {
-            return d.querySelectorAll('[c-id="' + n + '"]');
+            return d.querySelectorAll(`[c-id='${n}']`);
         },
         createElement =  function(node , state , ComponentName , ComponentId) {
             var t = (node.type ? node.type.toLowerCase() : '');
-            
-            // if(!node && node !== 0){
-            //   return(document.createDocumentFragment())//nothing 
-            // }
+
             if (typeof node === 'string' || typeof node === 'number') {
                 return document.createTextNode(node);
             }
+
             if(t.substr(0,2) == 'c-'){
                 var $el = document.createElement('div'),
                 name = t.substr(2),
-                id = 'cl-' + name + '-' + global.$.Clst.c;
+                id = `cl- ${name}-${global.$.Clst.c}`;
                 $el.setAttribute('C-id', id);
-                Manage($el , name , id , node.props)
+                Manage($el , name , id , node.props , ComponentName , ComponentId)
                 global.$.Clst.c += 1;
             }else{
                 var $el = document.createElement(node.type)
@@ -44,14 +42,28 @@ var     flatten = function(arr) {
           }
           return out;
         },
-        Manage = function Manage(ground, ComponentName, ComponentId, Props) {
-                var component = global.$.Components[ComponentName];
+        seperate = function seperate(a){
+          var d = {};
+          for(var item in a){
+            if(item[0] == 'c' && item[1] == '-'){
+               d[item.substr(2)] = a[item];
+               delete a[item];
+            }
+          }
+          return([a , d]);
+        },
+        Manage = function Manage(ground, ComponentName, ComponentId, Props , cn , ci) {
+                var component = global.$.Components[ComponentName],
+                    Props     = seperate(Props);
                 if (component !== undefined) {
-                    const data =  clone(component.state);
+                        const data =  clone(Object.assign(component.state , Props[0]));
+                        data['$emit'] = function(a , b) {
+                          global.$.Components[cn].events[Props[1][a]].bind(data)(b)
+                        } 
                         global.$.O[ComponentId] = clone(data);
 
                     var state = new Observer(data , component.auto || {} , ComponentId , ComponentName).data
-                        
+                      
                     global.$.S[ComponentId] = state;
                     ground.appendChild(createElement(component.view(state , cX) , state , ComponentName , ComponentId))       
                 }
