@@ -4,11 +4,16 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const MinifyPlugin = require('babel-minify-webpack-plugin');
+var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const extractCSS = new ExtractTextPlugin({ filename: 'css.bundle.css' })
 
 module.exports = {
   mode: 'development',
   entry: './src/app.js',
+  devServer: {
+    inline:true,
+    port: 8008
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: './app.js',
@@ -69,9 +74,10 @@ module.exports = {
     ]
   },
   plugins:[
+    new OpenBrowserPlugin({ url: 'http://localhost:8008' }),
     new HtmlWebpackPlugin({
       template:'./src/index.html'
     }),
-    extractCSS
+    extractCSS,
   ]
 };
