@@ -2,23 +2,26 @@ import {UpdateData} from './render'
 
 export default class Observer {
 
-    constructor(data, auto , ci , cn) {
+    constructor(data, auto , ci , cn , state = false) {
         this.data = data;
-        this.observe(data, auto , ci , cn);
+        this.observe(data, auto , ci , cn , state);
     }
 
-    observe(data, auto , ci , cn) {
+    observe(data, auto , ci , cn , state) {
         var self = this;
         if (!data || typeof data !== 'object') {
             return;
         }
         Object.keys(data).forEach(function(key) {
-            self.observeObject(data, key, data[key], auto , ci , cn);
+            self.observeObject(data, key, data[key], auto , ci , cn , state);
         });
     }
 
-    observeObject(data, key, val, compute , ci , cn) {
-        var self = this;
+    observeObject(data, key, val, compute , ci , cn , state) {
+            var self = this;
+            if(state){
+                $.Clst.connection[key] = [];
+            }
             if(typeof(val) == 'function' && key !== '$emit'){
                 var max = val;
                 val = max()
@@ -41,8 +44,14 @@ export default class Observer {
                 }else{
                     val = newVal;
                 }
-                
-                 UpdateData(val , ci , cn)
+                if(state){
+                    $.Clst.connection[key].forEach(CI => {
+                        $.S[CI][key] = val;
+                    }); 
+                }else{
+                   UpdateData(val , ci , cn)//change when local state change
+                }
+                 
                  if (Array.isArray(newVal)) {
                      self.observeArray(data , newVal , ci , cn , compute , key);
                  } else {
