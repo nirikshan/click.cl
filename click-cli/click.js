@@ -1,7 +1,7 @@
 import {
     Manage
 } from './render.js'
-
+import Observer from './observer';
 
 global.$ = {
     name: '',
@@ -20,8 +20,9 @@ global.$ = {
 class $_Click {
 
     constructor(appname, global) {
-        $['name'] = appname;
-        $['global'] = global;
+        $['name']       =  appname;
+        $['global']     =  global;
+        $.global.state  =  new Observer(global.state , global.auto || {} , appname , appname , true).data;
     }
 
     render(ground, name) {
@@ -35,6 +36,7 @@ class $_Click {
                     Manage(ground, name, 'Click_Root', fiber, {
                         st: true
                     });
+                    // $.global.state  =  new Observer($.global.state , $.global.auto || {} , $.appname , $. appname , true).data;
                     console.timeEnd('clickjs')
                 }
             }
@@ -54,7 +56,14 @@ class app {
 
 }
 
+var action = function action(a) {
+    return function() {
+        $.global.action[a].apply($.global, arguments);
+    }
+  }
+
 export {
     $_Click,
-    app
+    app,
+    action
 };
