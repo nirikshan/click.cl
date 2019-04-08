@@ -52,13 +52,25 @@ var     flatten = function(arr) {
           }
           return([a , d]);
         },
+        stateManager = function state(){
+          for (var newState = {} , i = 0; i < arguments.length; i++) {
+              const element = arguments[i];
+              $.Clst.connection[element].push(this.ci);
+              newState[element] = $.global.state[element];
+          }
+          return function(b){
+            return(b == undefined || b == {}) ? newState : Object.assign(b , newState);
+          };
+        },
         Manage = function Manage(ground, ComponentName, ComponentId, Props , cn , ci) {
                 var component = global.$.Components[ComponentName],
                     Props     = seperate(Props);
                 if (component !== undefined) {
-                        const data =  clone(Object.assign(component.state , Props[0]));
+
+                        const data =  clone(Object.assign(typeof component.state  == 'function' ? component.state({state:stateManager , cn:ComponentName , ci:ComponentId}) : component.state , Props[0]));
                         data['$emit'] = function(a , b) {
-                          global.$.Components[cn].events[Props[1][a]].bind(data)(b)
+                         // console.log(global.$.S[ci] , 111)
+                          global.$.Components[cn].fn[Props[1][a]].bind(global.$.S[ci])(b)
                         } 
                         global.$.O[ComponentId] = clone(data);
 
@@ -130,9 +142,17 @@ var     flatten = function(arr) {
                     value  = splits[0],
                     caller = splits[1];
                 }
-                var lv = kl.events[value].bind(state);
+                var params  =  caller && caller.split(','), main = [],
+                    lv      =  ('function' !== typeof(kl.fn)   ? ((kl.fn[value]) || console.error) : console.error);
+                    main[1] = kl.fn;
+            
                 node.addEventListener(name, function(a) {
-                    lv(a , (state[caller] || caller))
+                  //a.__proto__.constructor.name
+                 main[0] = a;
+                  // params.splice(0,0,a)
+                  lv.name == 'error'? lv('can\'t find events method') :
+                                      lv.apply(state , main.concat(params));
+                                     
                 })
             }
         },
@@ -145,7 +165,7 @@ var     flatten = function(arr) {
             if (type === 4 && !id) { 
               parent.attributes[name].value = value;
             }
-            if (id) { // props
+            if (id) { // Dynamic props
               $.S[id.value][name] = value; 
             }
             if(type === 6){
@@ -184,7 +204,6 @@ var     flatten = function(arr) {
         diffProps = function diffProps(newNode, oldNode , ci , cn) {
           const patches = []
           const props = Object.assign({}, newNode.props, oldNode.props)
-          //console.log(newNode.props , oldNode.props)
           Object.keys(props).forEach(name => {
             const newVal = newNode.props[name];
             const oldVal = oldNode.props[name];
