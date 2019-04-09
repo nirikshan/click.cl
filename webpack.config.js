@@ -1,16 +1,21 @@
 var path = require('path');
 var HtmlWebpackPlugin  = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-var CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const MinifyPlugin = require('babel-minify-webpack-plugin');
+const { BaseHrefWebpackPlugin } = require('base-href-webpack-plugin');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
-const extractCSS = new ExtractTextPlugin({ filename: 'css.bundle.css' })
+const extractCSS = new ExtractTextPlugin({ filename: 'css.bundle.css' });
+
+
+// var CleanWebpackPlugin = require('clean-webpack-plugin');
+// const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+// const MinifyPlugin = require('babel-minify-webpack-plugin');
+
 
 module.exports = {
   mode: 'development',
   entry: './src/app.js',
   devServer: {
+    historyApiFallback:true,
     inline:true,
     port: 8008
   },
@@ -74,10 +79,13 @@ module.exports = {
     ]
   },
   plugins:[
-    new OpenBrowserPlugin({ url: 'http://localhost:8008' }),
     new HtmlWebpackPlugin({
       template:'./src/index.html'
     }),
+    new BaseHrefWebpackPlugin({
+      baseHref:  process.env['npm_lifecycle_event'] == 'click' ? '/' : './'
+    }),
+    new OpenBrowserPlugin({ url: 'http://localhost:8008' }),
     extractCSS,
   ]
 };
