@@ -1,7 +1,7 @@
 var path = require('path');
 var HtmlWebpackPlugin  = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const { BaseHrefWebpackPlugin } = require('base-href-webpack-plugin');
+const { ClickBaseManager } = require('click-base-manager');
 var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 const extractCSS = new ExtractTextPlugin({ filename: 'css.bundle.css' });
 
@@ -82,7 +82,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template:'./src/index.html'
     }),
-    new BaseHrefWebpackPlugin({
+    new ClickBaseManager({
       baseHref:  process.env['npm_lifecycle_event'] == 'click' ? '/' : './'
     }),
     new OpenBrowserPlugin({ url: 'http://localhost:8008' }),
