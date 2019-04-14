@@ -9,6 +9,14 @@ var     flatten = function(arr) {
         clickId =  function( d , n) {
             return d.querySelectorAll(`[c-id='${n}']`);
         },
+        PatchServices = function($el , name , id , node , ComponentName , ComponentId) {
+          var services = global.$.Clst.services[name];
+                if(services){
+                   services.watch = function(params) {
+                      params($el, Manage , id , node , ComponentName , ComponentId); 
+                   }
+                }
+        },
         createElement =  function(node , state , ComponentName , ComponentId) {
             var t = (node.type ? node.type.toLowerCase() : '');
 
@@ -19,10 +27,11 @@ var     flatten = function(arr) {
             if(t.substr(0,2) == 'c-'){
                 var $el = document.createElement('div'),
                 name = t.substr(2),
-                id = `cl- ${name}-${global.$.Clst.c}`;
+                id = `cl-${name}-${global.$.Clst.c}`;
                 $el.setAttribute('C-id', id);
                 Manage($el , name , id , node.props , ComponentName , ComponentId)
                 global.$.Clst.c += 1;
+                PatchServices($el , name , id , node.props , ComponentName , ComponentId)
             }else{
                 var $el = document.createElement(node.type)
             }
@@ -145,6 +154,7 @@ var     flatten = function(arr) {
                 var params  =  caller && caller.split(','), main = [],
                     lv      =  ('function' !== typeof(kl.fn)   ? ((kl.fn[value]) || console.error) : console.error);
                     main[1] = kl.fn;
+                    //params.unshift()
             
                 node.addEventListener(name, function(a) {
                   //a.__proto__.constructor.name
@@ -290,9 +300,6 @@ var     flatten = function(arr) {
 
                 global.$.O[ci] = clone(NewData);
         }
-
-          
-
 
 export {
     Manage,
