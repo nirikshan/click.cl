@@ -138,5 +138,4 @@ export default class Observer {
         }
         return(value);
     }
-
 }
