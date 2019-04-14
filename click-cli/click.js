@@ -11,7 +11,7 @@ global.$ = {
     O:{},
     Clst: {
         c: 0,
-        bl: [],
+        services: [],
         connection: {},
         Duid:0
     }
@@ -19,14 +19,24 @@ global.$ = {
 
 class $_Click {
 
-    constructor(appname, global) {
-        $['name']       =  appname;
-        $['global']     =  global;
-        $.global.state  =  new Observer(global.state , global.auto || {} , appname , appname , true).data;
+    constructor(appname, obj) {
+        $['name']          =  appname;
+        $['global']        =  obj.global;
+        this['el']         =  obj.el;    
+        //obj.dep[0].__proto__.constructor.name
+        $.global.state  =  new Observer(obj.global.state , obj.global.auto || {} , appname , appname , true).data;
+        this.checkServices(obj.service);
     }
 
-    render(ground, name) {
-        console.log(ground)
+    checkServices(a){
+        for (var i = 0; i < a.length; i++) {
+            var el = a[i];
+            $.Clst['services'][el.name] =  el
+        }
+    }
+
+    render(name) {
+        var ground = document.querySelector(this.el);
         if (typeof ground === 'object' && typeof(name) === 'string') {
             if ($.Components[name]) {
                 var fiber = {};
