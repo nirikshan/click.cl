@@ -16,7 +16,7 @@ module.exports = {
   entry: './src/app.js',
   devServer: {
     historyApiFallback:true,
-    inline:true,
+    stats: 'minimal',
     port: 8008
   },
   output: {
@@ -32,7 +32,10 @@ module.exports = {
             loader:'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
-              plugins: [require('@babel/plugin-proposal-object-rest-spread')]
+              plugins: [
+                require('@babel/plugin-proposal-object-rest-spread'),
+                "@babel/plugin-syntax-dynamic-import"
+              ]
             }
           },
           {
@@ -46,6 +49,10 @@ module.exports = {
           fallback: 'style-loader',
           use: [ 'css-loader' ]
         })
+      },
+      {
+        test: /\.(jpg|jpeg|png|woff|woff2|eot|ttf|svg)$/,
+        loader: 'url-loader?limit=100000'
       },
       {
         test:/\.html$/,
