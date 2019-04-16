@@ -17,7 +17,7 @@ var     flatten = function(arr) {
                    }
                 }
         },
-        createElement =  function(node , state , ComponentName , ComponentId) {
+        createElement =  function(node , state , ComponentName , ComponentId) { 
             var t = (node.type ? node.type.toLowerCase() : '');
 
             if (typeof node === 'string' || typeof node === 'number') {
@@ -118,28 +118,27 @@ var     flatten = function(arr) {
                 EvaluateEvents(props, name, node, value, state , ComponentName , ComponentId);
             }
         },
-        parse = function parse(exp , obj , upto = 0){
-          if (/[^\w.$]/.test(exp)) return; 
-          var exps = exp.split('.');
-          for (var i = 0, len = exps.length; i < len - upto; i++) {
-              if (!obj) return;
-              obj = undefined !== obj[exps[i]] ? obj[exps[i]] : false;
+        parse = function parse(value , j){
+          var va = value[0];
+          for (let i = 1; i < value.length - j; i++) {
+             va = va[value[i]]
           }
-          if(obj){
-              return obj;
-          }
+          return(va)
         },
         BindAllLayers = function BindAllLayers(scope, tag, props, name ,value, ComponentId) {
           var attr = tag.nodeName === 'INPUT' ? (tag.attributes.type && tag.attributes.type.value) : tag.nodeName == 'SELECT' ? 'select' : tag.nodeName,
-              s = (-1 !== ['checkbox', 'radio','select'].indexOf(attr) ? 'change' : 'input'),
-               val   = value.split('.').reverse()[0];
-               scope = parse(value , scope , 1); // pure scope is for loop no need to parse
-      
-          tag.addEventListener(s, function(e) {
+              s = (-1 !== ['checkbox', 'radio','select'].indexOf(attr) ? 'change' : 'input');
+
+            tag.addEventListener(s, function(e) {
               var va = ('change' == s ? this.checked || this.value : ((tag.attributes.type && tag.attributes.type.value == 'file') ? this.files[0] : this.value));
-              scope[val] = va;
-          });
-          tag.value = scope[val];    
+                if(Array.isArray(value)){
+                  var main = value[value.length - 1];
+                  parse(value , 1)[main]  = va
+                }else{
+                  scope[value] = va;
+                }
+            });
+            tag.value  = Array.isArray(value) ? parse(value , 0 ) : scope[value];             
         },
         EvaluateEvents = function EvaluateEvents(props, name, node , value, state , ComponentName , ComponentId) {
             var kl = global.$.Components[ComponentName];
@@ -176,10 +175,10 @@ var     flatten = function(arr) {
               parent.attributes[name].value = value;
             }
             if (id) { // Dynamic props
-              $.S[id.value][name] = value; 
+              $.S[id.value][name] = typeof value == 'object' ? clone(value) : value; 
             }
             if(type === 6){
-              parent.value = parse(value ,$.S[propPatch.ci] , 0) || ''
+              parent.value = Array.isArray(value) ? parse(value , 0 ) : $.S[propPatch.ci][value]//parse(value ,$.S[propPatch.ci] , 0) || ''
             }
           }
         },        
@@ -296,6 +295,7 @@ var     flatten = function(arr) {
                 New       =   view.view(NewData ,cX ),
                 Old       =   view.view( OldData , cX), 
                 patches   =   diff(New, Old , ci , cn);
+                //console.log(patches)
                 patch(el, patches)
 
                 global.$.O[ci] = clone(NewData);
