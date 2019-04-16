@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "click-cli": "^1.0.0",
-    "click-router": "^1.1.0"
+    "click-router": "^1.1.1"
   },
   "deprecated": false,
   "description": "click.js application with webpack and babel Configuration.",
@@ -17,7 +17,7 @@
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^1.0.0",
     "click-base-manager": "^1.1.0",
-    "click-loader": "^2.2.0",
+    "click-loader": "^2.2.1",
     "css-loader": "^2.0.0",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^2.0.0",
