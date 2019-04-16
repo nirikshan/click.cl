@@ -47,7 +47,7 @@ module.exports = {
         test: /\.css$/,
         use: extractCSS.extract({ // Instance 1
           fallback: 'style-loader',
-          use: [ 'css-loader' ]
+          use: [ 'css-loader' ,'click-style-loader']
         })
       },
       {
