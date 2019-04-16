@@ -165,6 +165,9 @@ var     flatten = function(arr) {
                 })
             }
         },
+        UpdateProps = function(old , neu) {
+          console.log(old , neu)
+        },
         patchProps = function patchProps(parent, patches) {
           for (let i = 0; i < patches.length; i++) {
             const propPatch = patches[i]
@@ -175,7 +178,8 @@ var     flatten = function(arr) {
               parent.attributes[name].value = value;
             }
             if (id) { // Dynamic props
-              $.S[id.value][name] = typeof value == 'object' ? clone(value) : value; 
+              UpdateProps($.S[id.value][name] , value)
+              //$.S[id.value][name] = typeof value == 'object' ? clone(value) : value; 
             }
             if(type === 6){
               parent.value = Array.isArray(value) ? parse(value , 0 ) : $.S[propPatch.ci][value]//parse(value ,$.S[propPatch.ci] , 0) || ''
@@ -295,11 +299,12 @@ var     flatten = function(arr) {
                 New       =   view.view(NewData ,cX ),
                 Old       =   view.view( OldData , cX), 
                 patches   =   diff(New, Old , ci , cn);
-                //console.log(patches)
                 patch(el, patches)
-
                 global.$.O[ci] = clone(NewData);
         }
+
+          
+
 
 export {
     Manage,
