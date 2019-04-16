@@ -1,16 +1,32 @@
 import {$_Click , app }from 'click-cli';
-import './js/app2';
 
-var io = new $_Click('Xprin');
+
+// import global from './confg/state';
+// import router from './confg/router';
+// import './component/main';<c-top/>
+import '../src/js/propstest';
+var router = []
+
+
 
 new app('parent',{
     view: (`<div>
-        <cl-looptest/>
+         <c-propstest/>
     </div>`),
 
     state:{
-      name:'Nirikshan'
+    },
+
+    fn:{
+
     }
 })
 
- io.render(document.getElementById('root'), 'parent');
+
+new $_Click('Xprin' ,{
+    el:'#root',
+    global: global,
+    service:[
+       router
+    ]
+}).render('parent');
