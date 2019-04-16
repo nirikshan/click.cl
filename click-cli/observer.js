@@ -44,37 +44,45 @@ export default class Observer {
                 }else{
                     val = newVal;
                 }
-                if(state){
-                    $.Clst.connection[key].forEach(CI => {
-                        $.S[CI][key] = val;
-                    }); 
-                }else{
-                   UpdateData(val , ci , cn)//change when local state change
-                }
+
+                 self.UpdatePathWay(val , ci , cn , state , key)
                  
                  if (Array.isArray(newVal)) {
-                     self.observeArray(data , newVal , ci , cn , compute , key);
+                     self.observeArray(data , newVal , ci , cn , compute , key , state);
                  } else {
-                     self.observe(newVal, {} , ci , cn);
+                     self.observe(newVal, {} , ci , cn , state);
                  }
             },
         });
 
         if (Array.isArray(val)) {
-            self.observeArray(data , val , ci , cn , compute , key);
+            self.observeArray(data , val , ci , cn , compute , key , state);
         } else {
             if(typeof(val) === 'object'){  
-                self.observe(val , {} , ci , cn);
+                self.observe(val , {} , ci , cn , state);
             }   
         }
     }
 
-    observeArray(data , arr , ci , cn , compute , key) {
+    clone(o) {
+        var out, v, key;
+        out = Array.isArray(o) ? [] : {};
+        for (key in o) {
+            v = o[key];
+            out[key] = (typeof v === "object" && v !== null) ? clone(v) : v;
+        }
+        return out;
+      }
+
+    observeArray(data , arr , ci , cn , compute , key , state) {
         var self = this;
-        arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key);
+        arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key , state);
+        arr.forEach(function(item, z) {
+             self.observe(item, {} , ci , cn , state);
+        });
     }
 
-    defineReactiveArray(data , ci , cn , val , compute , key) {
+    defineReactiveArray(data , ci , cn , val , compute , key , state) {
         var arrayPrototype = Array.prototype;
         var arrayMethods = Object.create(arrayPrototype);
         var self = this;
@@ -117,10 +125,10 @@ export default class Observer {
                             break
                     }
                     if (inserted && inserted.length) {
-                        self.observeArray(data , inserted , ci , cn , compute)
+                        self.observeArray(data , inserted , ci , cn , compute , state)
                     }
                     self.auto(compute[key] , data , data[key]);
-                    UpdateData(val , ci , cn)
+                    self.UpdatePathWay(val , ci , cn , state , key)
                     return result
                 },
                 enumerable: true,
@@ -138,4 +146,15 @@ export default class Observer {
         }
         return(value);
     }
+
+    UpdatePathWay(val , ci , cn , state , key){
+        if(state){
+            $.Clst.connection[key].forEach(CI => {
+                $.S[CI][key] = val;
+            }); 
+        }else{
+           UpdateData(val , ci , cn , state , key)//change when local state change
+        }
+    }
+
 }
