@@ -91,7 +91,7 @@ var     flatten = function(arr) {
         },
         setProps = function setProps(node , el , state , ComponentName , ComponentId) {
             var props = node || {},
-            id = el.attributes['cl-id'];
+            id = el.attributes['c-id'];
             if (!id) {
                 Object.keys(props).forEach(name => {
                     setProp(node, el , name, props[name] , state , ComponentName , ComponentId)
@@ -153,37 +153,38 @@ var     flatten = function(arr) {
                 var params  =  caller && caller.split(','), main = [],
                     lv      =  ('function' !== typeof(kl.fn)   ? ((kl.fn[value]) || console.error) : console.error);
                     main[1] = kl.fn;
-                    //params.unshift()
-            
+
                 node.addEventListener(name, function(a) {
-                  //a.__proto__.constructor.name
-                 main[0] = a;
-                  // params.splice(0,0,a)
+                  main[0] = a;
                   lv.name == 'error'? lv('can\'t find events method') :
-                                      lv.apply(state , main.concat(params));
-                                     
+                                      lv.apply(state , main.concat(params));                                     
                 })
             }
-        },
-        UpdateProps = function(old , neu) {
-          console.log(old , neu)
         },
         patchProps = function patchProps(parent, patches) {
           for (let i = 0; i < patches.length; i++) {
             const propPatch = patches[i]
             const {type, name, value} = propPatch;
             var  id = parent.attributes['c-id'];
-
+            
             if (type === 4 && !id) { 
               parent.attributes[name].value = value;
-            }
-            if (id) { // Dynamic props
-              UpdateProps($.S[id.value][name] , value)
-              //$.S[id.value][name] = typeof value == 'object' ? clone(value) : value; 
-            }
+            } 
             if(type === 6){
               parent.value = Array.isArray(value) ? parse(value , 0 ) : $.S[propPatch.ci][value]//parse(value ,$.S[propPatch.ci] , 0) || ''
             }
+            if (id) { // Dynamic props
+      
+              var old = $.S[id.value][name], neu = value; 
+              var max = Math.max(old.length , neu.length);
+              for (let j = 0; j < max; j++) {
+                 var a = old[j] , b = neu[j];
+                   if(a == undefined && b !== undefined){
+                     $.S[id.value][name].push(clone(b))   
+                   }
+               } 
+             }
+           
           }
         },        
         patch = function(parent, patches, index = 0) { //@
@@ -232,7 +233,6 @@ var     flatten = function(arr) {
           return patches
         },
         diff = function(newNode, oldNode , ci , cn) {  //@
-            
           if(typeof(newNode) == 'function' && typeof(oldNode) == 'function' ){
            // console.log(newNode == oldNode)
           }
