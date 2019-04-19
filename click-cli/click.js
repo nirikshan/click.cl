@@ -70,7 +70,8 @@ var action = function action(a) {
     return function() {
         $.global.action[a].apply($.global, arguments);
     }
- }
+  }
+
 export {
     $_Click,
     app,
