@@ -44,7 +44,6 @@ export default class Observer {
                 }else{
                     val = newVal;
                 }
-
                  self.UpdatePathWay(val , ci , cn , state , key)
                  
                  if (Array.isArray(newVal)) {
@@ -78,6 +77,7 @@ export default class Observer {
         var self = this;
         arr.__proto__ = self.defineReactiveArray(data , ci , cn , arr , compute , key , state);
         arr.forEach(function(item, z) {
+            // console.log(ci , cn )
              self.observe(item, {} , ci , cn , state);
         });
     }
@@ -148,9 +148,12 @@ export default class Observer {
     }
 
     UpdatePathWay(val , ci , cn , state , key){
+        var self = this;
         if(state){
+            console.log($.Clst.connection[key]  , key)
             $.Clst.connection[key].forEach(CI => {
-                $.S[CI][key] = val;
+                console.log(key)
+                 $.S[CI][key] = val;
             }); 
         }else{
            UpdateData(val , ci , cn , state , key)//change when local state change
