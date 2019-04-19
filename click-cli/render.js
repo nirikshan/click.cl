@@ -78,7 +78,6 @@ var     flatten = function(arr) {
 
                         const data =  clone(Object.assign(typeof component.state  == 'function' ? component.state({state:stateManager , cn:ComponentName , ci:ComponentId}) : component.state , Props[0]));
                         data['$emit'] = function(a , b) {
-                         // console.log(global.$.S[ci] , 111)
                           global.$.Components[cn].fn[Props[1][a]].bind(global.$.S[ci])(b)
                         } 
                         global.$.O[ComponentId] = clone(data);
@@ -156,7 +155,7 @@ var     flatten = function(arr) {
 
                 node.addEventListener(name, function(a) {
                   main[0] = a;
-                  lv.name == 'error'? lv('can\'t find events method') :
+                  lv.name == 'error'? lv('can\'t find events method : '+value) :
                                       lv.apply(state , main.concat(params));                                     
                 })
             }
@@ -174,16 +173,12 @@ var     flatten = function(arr) {
               parent.value = Array.isArray(value) ? parse(value , 0 ) : $.S[propPatch.ci][value]//parse(value ,$.S[propPatch.ci] , 0) || ''
             }
             if (id) { // Dynamic props
-      
-              var old = $.S[id.value][name], neu = value; 
-              var max = Math.max(old.length , neu.length);
-              for (let j = 0; j < max; j++) {
-                 var a = old[j] , b = neu[j];
-                   if(a == undefined && b !== undefined){
-                     $.S[id.value][name].push(clone(b))   
-                   }
-               } 
-             }
+              if(typeof value == 'object'){
+                $.S[id.value][name] = clone(value);
+              }else{
+                $.S[id.value][name] = value;
+              }
+            }
            
           }
         },        
