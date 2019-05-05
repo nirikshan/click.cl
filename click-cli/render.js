@@ -28,7 +28,7 @@ var     flatten = function(arr) {
                 var $el = document.createElement('div'),
                 name = t.substr(2),
                 id = `cl-${name}-${global.$.Clst.c}`;
-                $el.setAttribute('C-id', id);
+                $el.setAttribute('c-id', id);
                 Manage($el , name , id , node.props , ComponentName , ComponentId)
                 global.$.Clst.c += 1;
                 PatchServices($el , name , id , node.props , ComponentName , ComponentId)
@@ -73,6 +73,7 @@ var     flatten = function(arr) {
         },
         Manage = function Manage(ground, ComponentName, ComponentId, Props , cn , ci) {
                 var component = global.$.Components[ComponentName],
+                    Hook      = component.fn;
                     Props     = seperate(Props);
                 if (component !== undefined) {
 
@@ -85,6 +86,8 @@ var     flatten = function(arr) {
                     var state = new Observer(data , component.auto || {} , ComponentId , ComponentName).data
                       
                     global.$.S[ComponentId] = state;
+
+                    typeof Hook['start'] == 'function' && Hook['start'](state);  
                     ground.appendChild(createElement(component.view(state , cX) , state , ComponentName , ComponentId))       
                 }
         },
@@ -183,7 +186,7 @@ var     flatten = function(arr) {
           }
         },        
         patch = function(parent, patches, index = 0) { //@
-          if (!patches) { return }
+          if (!patches || parent == undefined ) { return }
           const el   = parent.childNodes[index],
                 type = patches.type,
                 newNode = patches.newNode;
@@ -297,9 +300,6 @@ var     flatten = function(arr) {
                 patch(el, patches)
                 global.$.O[ci] = clone(NewData);
         }
-
-          
-
 
 export {
     Manage,
