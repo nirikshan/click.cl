@@ -51,12 +51,17 @@ var     flatten = function(arr) {
           }
           return out;
         },
-        seperate = function seperate(a){
+        seperate = function seperate(a , p , n){
           var d = {};
           for(var item in a){
-            if(item[0] == 'c' && item[1] == '-'){
+            var check = item[0] == 'c' && item[1] == '-'
+            if(check){
                d[item.substr(2)] = a[item];
                delete a[item];
+            }
+            if(!check && p.indexOf(item) == -1){
+              delete a[item];
+              console.error(item + ' cannot be used as props , Make sure "'+n+'" component accept this props')
             }
           }
           return([a , d]);
@@ -74,7 +79,7 @@ var     flatten = function(arr) {
         Manage = function Manage(ground, ComponentName, ComponentId, Props , cn , ci) {
                 var component = global.$.Components[ComponentName],
                     Hook      = component.fn;
-                    Props     = seperate(Props);
+                    Props     = seperate(Props , component.props || [] , ComponentName);
                 if (component !== undefined) {
 
                         const data =  clone(Object.assign(typeof component.state  == 'function' ? component.state({state:stateManager , cn:ComponentName , ci:ComponentId}) : component.state , Props[0]));
