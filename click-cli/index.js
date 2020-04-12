@@ -25,7 +25,12 @@ class $_Click {
         this['el']         =  obj.el;    
         //obj.dep[0].__proto__.constructor.name
         $.global.state  =  new Observer(obj.global.state , obj.global.auto || {} , appname , appname , true).data;
-        this.checkServices(obj.service);
+        if(obj.length > 0){
+            /*
+            * If there are external dep injected for example router.
+            */ 
+            this.checkServices(obj.service);
+        }
     }
 
     checkServices(a){
@@ -58,6 +63,7 @@ class $_Click {
 class app {
     constructor(x, y) {
         if (typeof x === 'string' && typeof y === 'object') {
+            var x = x.toLowerCase();
             y.view = (y.view);
             $.Components[x] = y;
             return y;
