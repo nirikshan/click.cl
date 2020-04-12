@@ -1,32 +1,45 @@
-import {$_Click , app }from 'click-cli';
-
-
-// import global from './confg/state';
-// import router from './confg/router';
-// import './component/main';<c-top/>
-import '../src/js/propstest';
-var router = []
-
-
+import { $_Click , app  , action} from 'click.cl';
+import './window.js';
 
 new app('parent',{
     view: (`<div>
-         <c-propstest/>
+        <c-window/>
+        <div class='inputBox' >
+           <input type='text' class='input' c-input='changeName' placeholder='Type Window Name.. '/>
+        </div>
     </div>`),
 
-    state:{
+    fn:{
+        changeName:function(val){
+            action('changename')(val.target.value);
+        }
     },
 
-    fn:{
+    state:{
+        
+    },
 
+    '@css':{
+        '.inputBox':{
+            'text-align':'center'
+        },
+        '.input':{
+            'border'  : 'none',
+            'opacity' : '0.6'
+        }
     }
 })
 
-
-new $_Click('Xprin' ,{
+new $_Click('Xprin' , {
     el:'#root',
-    global: global,
-    service:[
-       router
-    ]
+    global:{
+        state:{
+            windowName:'Welcome to Click.cl'
+        },
+        action:{
+            changename:function(value) {
+                this.state.windowName = value;
+            }
+        }
+    }
 }).render('parent');
