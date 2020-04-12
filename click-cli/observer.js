@@ -1,4 +1,4 @@
-import {UpdateData} from './render'
+import {UpdateData , LogicalUpdator} from './render'
 
 export default class Observer {
 
@@ -63,15 +63,7 @@ export default class Observer {
         }
     }
 
-    clone(o) {
-        var out, v, key;
-        out = Array.isArray(o) ? [] : {};
-        for (key in o) {
-            v = o[key];
-            out[key] = (typeof v === "object" && v !== null) ? clone(v) : v;
-        }
-        return out;
-      }
+
 
     observeArray(data , arr , ci , cn , compute , key , state) {
         var self = this;
@@ -148,15 +140,20 @@ export default class Observer {
     }
 
     UpdatePathWay(val , ci , cn , state , key){
-        var self = this;
+        var self = this,
+            view = global.$.Components[cn];
         if(state){
-            console.log($.Clst.connection[key]  , key)
             $.Clst.connection[key].forEach(CI => {
-                console.log(key)
-                 $.S[CI][key] = val;
+               if(typeof $.S[CI][key] !== 'object'){
+                   $.S[CI][key] = val
+               }else{
+                    LogicalUpdator($.S[CI][key] , val);
+               }
             }); 
-        }else{
-           UpdateData(val , ci , cn , state , key)//change when local state change
+        }else if(view){
+           UpdateData(val , ci , cn , state , key , view)//change when local state change
+        }else if(!view && cn == $.name){
+            console.log(cn , key)
         }
     }
 
